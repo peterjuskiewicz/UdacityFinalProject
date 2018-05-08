@@ -1,36 +1,70 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
 import Header from "./Header";
-import Map from './Map.js';
-import Search from './Search.js';
-import { searchForPub } from './pubSearch';
+import Map from "./Map.js";
+import Search from "./Search.js";
+import { searchForPub, getDetails } from "./pubSearch";
+import SearchList from "./searchList";
 
-const KEY = 'AIzaSyB1bKoTnnKP4VgZuKoJWb3LVocQVs5NRkc';
+const KEY = "AIzaSyApnoIaEE7mM9vqEw0oS8bFY1LVKSDfXOE";
 
 const pubSearch = searchForPub(KEY);
 
 class App extends Component {
-    onSearch = event => {
-        const value = event.target.value;
+  state = {
+    pubs: [],
+    relatedPubs: [],
+    activeLocation: null,
+    locationInfo: null
+  };
 
-        console.log(value);
-        pubSearch(value);
-    };
+  componentDidMount() {
+    this.handleSearchQuery(this.props.defaultQuery);
+  }
 
-    render() {
-      return(
+  handleSearchQuery = query => {
+    pubSearch(query).then(pubs => this.setState({ pubs }));
+  };
+
+  onSearch = event => {
+    const value = event.target.value;
+    this.handleSearchQuery(value);
+  };
+
+  handlePubClick = marker => {
+    const { lat, lng } = marker.getPosition();
+    this.setState({
+      activeLocation: marker
+    });
+    getDetails(`${lat()},${lng()}`).then(response => {
+      this.setState({
+        locationInfo: response && response.response.venues
+      });
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        <Header />
+        <main>
+          <Search onChange={this.onSearch} />
+          <SearchList pubs={this.state.pubs} />
           <div>
-              <Header/>
-              <main>
-                  <Search onChange={this.onSearch}/>
-                <Map
-                    center={{
-                    lat: 51.5401,
-                    lng: -0.1426
-                    }}
-                />
-              </main>
-          </div>);
+            {this.state.locationInfo &&
+              this.state.locationInfo.map(venue => <div>{venue.name}</div>)}
+          </div>
+          <Map
+            center={{
+              lat: 51.5401,
+              lng: -0.1426
+            }}
+            pubs={this.state.pubs}
+            onPubClick={this.handlePubClick}
+          />
+        </main>
+      </div>
+    );
   }
 }
 
