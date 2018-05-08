@@ -18,6 +18,30 @@ class Map extends React.Component {
         })
     }
 
+  centerMap = location => {
+    this.map && this.map.setCenter(location);
+  }
+
+  renderMarker = position => {
+    let marker = new window.google.maps.Marker({
+      position,
+      title: 'Hello World!'
+    });
+
+    marker.setMap(this.map);
+    marker.addListener('click', () => {
+      const { lat, lng } = marker.getPosition();
+      this.props.onPubClick({ lat: lat(), lng: lng() });
+    })
+  };
+
+  componentDidUpdate(nextProps) {
+        if (this.props.center !== nextProps.center || this.props.pubs !== nextProps.pubs) {
+          this.centerMap(nextProps.center);
+          this.renderMarkers();
+    }
+  }
+
     renderMap() {
         this.map = new window.google.maps.Map(this.mapElement.current, {
             zoom: 17,
@@ -32,26 +56,9 @@ class Map extends React.Component {
         })
     }
 
-    renderMarker = position => {
-        let marker = new window.google.maps.Marker({
-            position,
-            title: 'Hello World!'
-        });
-
-        marker.setMap(this.map);
-        marker.addListener('click', () => {
-            this.props.onPubClick(marker);
-        })
-    };
-
-    center = () => {
-        this.map.setCenter(this.props.center)
-    };
-
     render() {
         return (<div>
             <div aria-label="Map" className="map" ref={this.mapElement} />
-            <button onClick={this.center}>Center</button>
         </div>);
     }
 };

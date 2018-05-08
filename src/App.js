@@ -1,12 +1,14 @@
 import React, { Component } from "react";
+import Grid from 'material-ui/Grid';
 import "./App.css";
 import Header from "./Header";
 import Map from "./Map.js";
 import Search from "./Search.js";
 import { searchForPub, getDetails } from "./pubSearch";
 import SearchList from "./searchList";
+import LocationInfo from './LocationInfo'
 
-const KEY = "AIzaSyApnoIaEE7mM9vqEw0oS8bFY1LVKSDfXOE";
+const KEY = "AIzaSyBvdfWJwISNeCLrNE6ONIZmWdqEZ1ysFUI";
 
 const pubSearch = searchForPub(KEY);
 
@@ -15,7 +17,11 @@ class App extends Component {
     pubs: [],
     relatedPubs: [],
     activeLocation: null,
-    locationInfo: null
+    locationInfo: null,
+    mapCenter: {
+      lat: 51.5401,
+      lng: -0.1426
+    },
   };
 
   componentDidMount() {
@@ -23,7 +29,10 @@ class App extends Component {
   }
 
   handleSearchQuery = query => {
-    pubSearch(query).then(pubs => this.setState({ pubs }));
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      pubSearch(query).then(pubs => this.setState({ pubs }));
+    }, 500);
   };
 
   onSearch = event => {
@@ -31,37 +40,52 @@ class App extends Component {
     this.handleSearchQuery(value);
   };
 
-  handlePubClick = marker => {
-    const { lat, lng } = marker.getPosition();
+  setActiveLocation = location => {
     this.setState({
-      activeLocation: marker
-    });
-    getDetails(`${lat()},${lng()}`).then(response => {
+      activeLocation: location,
+    })
+  };
+
+  getLocationDetails = location => {
+    const { lat, lng } = location;
+    getDetails(`${lat},${lng}`).then(response => {
       this.setState({
-        locationInfo: response && response.response.venues
+        locationInfo: response && response.response
       });
     });
+  };
+
+  centerMap = location => {
+    this.setState({
+      mapCenter: location.geometry.location,
+    })
+  };
+
+  handleSearchResultClick = result => {
+    this.setActiveLocation(result);
+    this.centerMap(result);
+    this.getLocationDetails(result.geometry.location)
   };
 
   render() {
     return (
       <div>
         <Header />
+        <Map
+          center={this.state.mapCenter}
+          pubs={this.state.pubs}
+          onPubClick={this.getLocationDetails}
+        />
         <main>
           <Search onChange={this.onSearch} />
-          <SearchList pubs={this.state.pubs} />
+          <SearchList pubs={this.state.pubs} onItemClick={this.handleSearchResultClick} />
+          { this.state.activeLocation && <LocationInfo {...this.state.activeLocation} /> }
           <div>
-            {this.state.locationInfo &&
-              this.state.locationInfo.map(venue => <div>{venue.name}</div>)}
+            <Grid container spacing={16} justify="center">
+              {this.state.locationInfo &&
+              this.state.locationInfo.venues.map(venue => <Grid item><LocationInfo name={venue.name} /></Grid>)}
+            </Grid>
           </div>
-          <Map
-            center={{
-              lat: 51.5401,
-              lng: -0.1426
-            }}
-            pubs={this.state.pubs}
-            onPubClick={this.handlePubClick}
-          />
         </main>
       </div>
     );
