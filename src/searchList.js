@@ -8,7 +8,7 @@ const ResultItem = ({ handleClick, item }) =>
 const SearchList = props => {
     return (
         <ul className="search-list-container">
-            {props.pubs.map((pub, index) => pub && <li className="search-result" key={index}>
+            {props.pubs && props.pubs.map((pub, index) => pub && <li className="search-result" key={index}>
               <ResultItem item={pub} handleClick={props.onItemClick} />
             </li>)}
         </ul>);

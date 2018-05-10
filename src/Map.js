@@ -51,7 +51,7 @@ class Map extends React.Component {
     }
 
     renderMarkers() {
-        this.props.pubs.map(pub => {
+        this.props.pubs && this.props.pubs.map(pub => {
             this.renderMarker(pub && pub.geometry.location)
         })
     }
