@@ -7,10 +7,9 @@ import Search from "./Search.js";
 import { searchForPub, getDetails } from "./pubSearch";
 import SearchList from "./searchList";
 import LocationInfo from './LocationInfo'
+import { GOOGLE_PLACES_API_KEY } from './config';
 
-const KEY = "AIzaSyBvdfWJwISNeCLrNE6ONIZmWdqEZ1ysFUI";
-
-const pubSearch = searchForPub(KEY);
+const pubSearch = searchForPub(GOOGLE_PLACES_API_KEY);
 
 class App extends Component {
   state = {
