@@ -33,6 +33,7 @@ class Map extends React.Component {
   };
 
   componentDidUpdate(nextProps) {
+    this.centerMap(nextProps.center);
     if (this.props.pubs !== nextProps.pubs) {
       this.renderMarkers();
     }
@@ -40,7 +41,6 @@ class Map extends React.Component {
       this.props.center !== nextProps.center ||
       this.props.activeLocation !== nextProps.activeLocation
     ) {
-      this.centerMap(nextProps.center);
       this.stopAnimation();
       this.animateMarker(
         nextProps.activeLocation && nextProps.activeLocation.id

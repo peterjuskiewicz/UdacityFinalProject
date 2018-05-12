@@ -24,8 +24,8 @@ class App extends Component {
     errorMessage: "",
     errorMessageForsquare: "",
     mapCenter: {
-      lat: 51.5401,
-      lng: -0.1426
+      lat: 51.539521,
+      lng: -0.142573
     }
   };
 
