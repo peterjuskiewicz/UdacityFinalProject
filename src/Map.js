@@ -25,7 +25,6 @@ class Map extends React.Component {
 
   renderMarker = marker => {
     marker.setMap(this.map);
-    marker.setAnimation(window.google.maps.Animation.DROP);
     marker.addListener("click", () => {
       const { lat, lng } = marker.getPosition();
       this.props.onPubClick({ lat: lat(), lng: lng() });
@@ -33,19 +32,14 @@ class Map extends React.Component {
   };
 
   componentDidUpdate(nextProps) {
-    this.centerMap(nextProps.center);
     if (this.props.pubs !== nextProps.pubs) {
       this.renderMarkers();
     }
-    if (
-      this.props.center !== nextProps.center ||
-      this.props.activeLocation !== nextProps.activeLocation
-    ) {
-      this.stopAnimation();
-      this.animateMarker(
-        nextProps.activeLocation && nextProps.activeLocation.id
-      );
-    }
+    this.centerMap(nextProps.center);
+    this.stopAnimation();
+    this.animateMarker(
+      nextProps.activeLocation && nextProps.activeLocation.id
+    );
   }
 
   animateMarker = id => {
