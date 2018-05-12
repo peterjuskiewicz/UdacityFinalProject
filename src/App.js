@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import { get } from "lodash";
 import Grid from "material-ui/Grid";
+import Typography from "material-ui/Typography";
 import "./App.css";
 import Header from "./Header";
 import Map from "./Map.js";
@@ -14,9 +16,13 @@ const pubSearch = searchForPub(GOOGLE_PLACES_API_KEY);
 class App extends Component {
   state = {
     pubs: [],
-    relatedPubs: [],
     activeLocation: null,
-    locationInfo: null,
+    otherVenues: [],
+    locationInfo: {
+      description: ""
+    },
+    errorMessage: "",
+    errorMessageForsquare: "",
     mapCenter: {
       lat: 51.5401,
       lng: -0.1426
@@ -52,13 +58,21 @@ class App extends Component {
     });
   };
 
-  getLocationDetails = location => {
+  getLocationDetails = (location, name) => {
     const { lat, lng } = location;
-    getDetails(`${lat},${lng}`).then(response => {
-      this.setState({
-        locationInfo: response && response.response
+    getDetails(`${lat},${lng}`, name)
+      .then(venue => {
+        this.setState({
+          locationInfo: venue,
+          errorMessageForsquare: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          locationInfo: null,
+          errorMessageForsquare: error
+        });
       });
-    });
   };
 
   centerMap = location => {
@@ -70,10 +84,12 @@ class App extends Component {
   handleSearchResultClick = result => {
     this.setActiveLocation(result);
     this.centerMap(result);
-    this.getLocationDetails(result.geometry.location);
+    this.getLocationDetails(result.geometry.location, result.name);
   };
 
   render() {
+    const { locationInfo } = this.state;
+
     return (
       <div>
         <Header />
@@ -91,18 +107,22 @@ class App extends Component {
             errorMessage={this.state.errorMessage}
           />
           {this.state.activeLocation && (
-            <LocationInfo {...this.state.activeLocation} />
+            <LocationInfo
+              {...this.state.activeLocation}
+              description={get(locationInfo, "description")}
+              price={get(locationInfo, "price.message")}
+              formattedPhone={get(locationInfo, "contact.formattedPhone")}
+              status={get(locationInfo, "hours.status")}
+              photo={get(locationInfo, "bestPhoto")}
+            />
           )}
-          <div>
-            <Grid container spacing={16} justify="center">
-              {this.state.locationInfo &&
-                this.state.locationInfo.venues.map(venue => (
-                  <Grid item key={venue.id}>
-                    <LocationInfo name={venue.name} />
-                  </Grid>
-                ))}
-            </Grid>
-          </div>
+          <Grid container spacing={32} justify="center">
+            {this.state.errorMessageForsquare && (
+              <Typography component="p">
+                {this.state.errorMessageForsquare}
+              </Typography>
+            )}
+          </Grid>
         </main>
       </div>
     );
