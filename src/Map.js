@@ -36,7 +36,10 @@ class Map extends React.Component {
     if (this.props.pubs !== nextProps.pubs) {
       this.renderMarkers();
     }
-    if (this.props.center !== nextProps.center) {
+    if (
+      this.props.center !== nextProps.center ||
+      this.props.activeLocation !== nextProps.activeLocation
+    ) {
       this.centerMap(nextProps.center);
       this.stopAnimation();
       this.animateMarker(
@@ -93,8 +96,6 @@ class Map extends React.Component {
     return (
       <div>
         <div aria-label="Map" className="map" ref={this.mapElement} />
-        <button onClick={this.clearMarkers}>clear</button>
-        <button onClick={this.stopAnimation}>stop animation</button>
       </div>
     );
   }
