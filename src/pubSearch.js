@@ -13,8 +13,7 @@ export const getDetails = ll =>
     })
     .then(res => res)
     .catch(e => {
-      const error = `Request failed. Returned ${e}`;
-      console.log(error);
+      throw `Request failed. Returned ${e}`;
     });
 
 export const searchForPub = key => postcode => {
@@ -33,7 +32,6 @@ export const searchForPub = key => postcode => {
       return res.results;
     })
     .catch(e => {
-      const error = `Request failed. Returned ${e}`;
-      console.log(error);
+      throw `Request failed. Returned ${e}`;
     });
 };

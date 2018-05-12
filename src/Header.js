@@ -1,14 +1,14 @@
-import React from 'react'
-import Typography from 'material-ui/Typography';
+import React from "react";
+import Typography from "material-ui/Typography";
 
-const Header = (props) => {
-    return <div>
+const Header = props => {
+  return (
+    <div>
       <Typography variant="display1" gutterBottom>
         Pub search
       </Typography>
-    </div>;
-
+    </div>
+  );
 };
-
 
 export default Header;
