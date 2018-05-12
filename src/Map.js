@@ -51,7 +51,7 @@ class Map extends React.Component {
   animateMarker = id => {
     this.state.markers.map(marker => {
       if (id === marker.id) {
-        marker.setAnimation(window.google.maps.Animation.DROP);
+        marker.setAnimation(window.google.maps.Animation.BOUNCE);
       }
     });
   };
