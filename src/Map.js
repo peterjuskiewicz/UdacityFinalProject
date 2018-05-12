@@ -1,18 +1,20 @@
 import React from "react";
 import importer from "./importer";
 import "./Map.css";
+import { GOOGLE_PLACES_API_KEY } from "./config";
 
-const KEY = "AIzaSyB1bKoTnnKP4VgZuKoJWb3LVocQVs5NRkc";
-const GOOGLE_URL = `https://maps.googleapis.com/maps/api/js?key=${KEY}`;
+const GOOGLE_URL = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_PLACES_API_KEY}`;
 
 class Map extends React.Component {
   state = { markers: [] };
   constructor(props) {
     super(props);
+    // creating a ref to the DOM element for the Google Maps to render at
     this.mapElement = React.createRef();
   }
 
   componentDidMount() {
+    // importing the Google Maps API script asynchronously
     importer.url(GOOGLE_URL).then(() => {
       this.renderMap();
       this.renderMarkers();
@@ -36,10 +38,10 @@ class Map extends React.Component {
       this.renderMarkers();
     }
     this.centerMap(nextProps.center);
+    // stopping animation for all markers before animating
+    // the marker for the active location
     this.stopAnimation();
-    this.animateMarker(
-      nextProps.activeLocation && nextProps.activeLocation.id
-    );
+    this.animateMarker(nextProps.activeLocation && nextProps.activeLocation.id);
   }
 
   animateMarker = id => {
@@ -71,7 +73,7 @@ class Map extends React.Component {
                 id: pub && pub.id
               })
           )
-      },
+      }, // using a setState callback to ensure we're using an updated state in the next line
       () => {
         this.state.markers.map(marker => this.renderMarker(marker));
       }

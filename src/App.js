@@ -14,6 +14,7 @@ import { GOOGLE_PLACES_API_KEY } from "./config";
 const pubSearch = searchForPub(GOOGLE_PLACES_API_KEY);
 
 class App extends Component {
+  // entire application state is managed within the App container
   state = {
     pubs: [],
     activeLocation: null,
@@ -30,6 +31,7 @@ class App extends Component {
   };
 
   componentDidMount() {
+    // triggering the default search query on mount to show a list of results
     this.handleSearchQuery(this.props.defaultQuery);
   }
 
@@ -59,6 +61,7 @@ class App extends Component {
   };
 
   getLocationDetails = (location, name) => {
+    // getting the list of results and displaying an error if thrown
     const { lat, lng } = location;
     getDetails(`${lat},${lng}`, name)
       .then(venue => {
